@@ -19,7 +19,8 @@ export default function TestPageClient() {
   const fromPdf = searchParams.get("fromPdf") === "1";
 
   const [availableNotes, setAvailableNotes] = useState([]);
-  const [selectedNoteIds, setSelectedNoteIds] = useState(initialSelectedIds);
+  const [selectedNoteIds, setSelectedNoteIds] =
+    useState(initialSelectedIds);
 
   const [difficulty, setDifficulty] = useState("medium");
   const [questionCount, setQuestionCount] = useState(5);
@@ -68,8 +69,12 @@ export default function TestPageClient() {
     if (!fromPdf) return;
     if (typeof window === "undefined") return;
 
-    const storedText = sessionStorage.getItem("studysphere_pdf_test_text");
-    const storedTitle = sessionStorage.getItem("studysphere_pdf_test_title");
+    const storedText = sessionStorage.getItem(
+      "studysphere_pdf_test_text"
+    );
+    const storedTitle = sessionStorage.getItem(
+      "studysphere_pdf_test_title"
+    );
 
     if (!storedText) {
       setError(
@@ -118,7 +123,10 @@ export default function TestPageClient() {
   // Timer logic + alerts
   useEffect(() => {
     if (timerMode && timeLeft > 0) {
-      const id = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
+      const id = setTimeout(
+        () => setTimeLeft((prev) => prev - 1),
+        1000
+      );
 
       // Half-time alert
       if (
@@ -144,11 +152,20 @@ export default function TestPageClient() {
       handleSubmitTest();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timerMode, timeLeft, questions.length, totalTime, halfAlertSent, last10AlertSent]);
+  }, [
+    timerMode,
+    timeLeft,
+    questions.length,
+    totalTime,
+    halfAlertSent,
+    last10AlertSent,
+  ]);
 
   const toggleSelectNote = (id) => {
     setSelectedNoteIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id]
     );
   };
 
@@ -173,13 +190,17 @@ export default function TestPageClient() {
 
       // In PDF mode, we MUST have OCR text
       if (fromPdf && !pdfText) {
-        setError("No PDF text available. Please go to Upload PDF and try again.");
+        setError(
+          "No PDF text available. Please go to Upload PDF and try again."
+        );
         return;
       }
 
       setLoadingQuiz(true);
 
-      const count = useCustom ? Number(customCount) : Number(questionCount);
+      const count = useCustom
+        ? Number(customCount)
+        : Number(questionCount);
 
       if (!count || count <= 0) {
         setError("Please choose a valid number of questions.");
@@ -214,7 +235,8 @@ export default function TestPageClient() {
             numQuestions: count,
             noteIds: selectedNoteIds,
             timerMode,
-            timerMinutes: customMinutes === "" ? 1 : Number(customMinutes),
+            timerMinutes:
+              customMinutes === "" ? 1 : Number(customMinutes),
           }),
         });
       }
@@ -227,11 +249,14 @@ export default function TestPageClient() {
       }
 
       setQuestions(data.questions || []);
-      setAnswers(new Array((data.questions || []).length).fill(null));
+      setAnswers(
+        new Array((data.questions || []).length).fill(null)
+      );
 
       // Set up timer if enabled
       if (timerMode) {
-        const minutes = customMinutes === "" ? 1 : Number(customMinutes);
+        const minutes =
+          customMinutes === "" ? 1 : Number(customMinutes);
         const totalSeconds = minutes * 60;
         setTotalTime(totalSeconds);
         setTimeLeft(totalSeconds);
@@ -279,7 +304,9 @@ export default function TestPageClient() {
 
       // time used (only if timer mode)
       const timeUsedSeconds =
-        timerMode && totalTime > 0 ? totalTime - timeLeft : null;
+        timerMode && totalTime > 0
+          ? totalTime - timeLeft
+          : null;
 
       const res = await fetch("/api/evaluate-test", {
         method: "POST",
@@ -356,19 +383,24 @@ export default function TestPageClient() {
 
         {fromPdf && pdfTitle && (
           <p className="text-xs text-emerald-300 mb-2">
-            Source PDF: <span className="font-semibold">{pdfTitle}</span>
+            Source PDF:{" "}
+            <span className="font-semibold">{pdfTitle}</span>
           </p>
         )}
 
         {error && (
-          <p className="mb-3 text-sm text-red-400 font-medium">{error}</p>
+          <p className="mb-3 text-sm text-red-400 font-medium">
+            {error}
+          </p>
         )}
 
         {/* NOTE SELECTION – hidden in PDF mode */}
         {!fromPdf && (
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-4 mb-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold">Select Notes for this Test</p>
+              <p className="text-sm font-semibold">
+                Select Notes for this Test
+              </p>
               <p className="text-xs text-slate-400">
                 Only selected notes will be used.
               </p>
@@ -388,8 +420,12 @@ export default function TestPageClient() {
                     >
                       <input
                         type="checkbox"
-                        checked={selectedNoteIds.includes(note._id)}
-                        onChange={() => toggleSelectNote(note._id)}
+                        checked={selectedNoteIds.includes(
+                          note._id
+                        )}
+                        onChange={() =>
+                          toggleSelectNote(note._id)
+                        }
                       />
                       <span className="truncate">
                         {note.title || "(Untitled note)"}
@@ -439,12 +475,16 @@ export default function TestPageClient() {
                   <select
                     className="bg-slate-800 p-2 rounded border border-slate-600"
                     value={questionCount}
-                    onChange={(e) => setQuestionCount(e.target.value)}
+                    onChange={(e) =>
+                      setQuestionCount(
+                        Number(e.target.value)
+                      )
+                    }
                   >
-                    <option value="5">5 Questions</option>
-                    <option value="10">10 Questions</option>
-                    <option value="15">15 Questions</option>
-                    <option value="20">20 Questions</option>
+                    <option value={5}>5 Questions</option>
+                    <option value={10}>10 Questions</option>
+                    <option value={15}>15 Questions</option>
+                    <option value={20}>20 Questions</option>
                   </select>
 
                   <button
@@ -460,7 +500,9 @@ export default function TestPageClient() {
                     type="number"
                     className="bg-slate-800 p-2 w-24 rounded border border-slate-600"
                     value={customCount}
-                    onChange={(e) => setCustomCount(e.target.value)}
+                    onChange={(e) =>
+                      setCustomCount(e.target.value)
+                    }
                     placeholder="Count"
                   />
                   <button
@@ -500,7 +542,8 @@ export default function TestPageClient() {
                       className="px-2 py-1 bg-slate-700 rounded hover:bg-slate-600"
                       onClick={() =>
                         setCustomMinutes((m) => {
-                          const current = m === "" ? 1 : Number(m);
+                          const current =
+                            m === "" ? 1 : Number(m);
                           return Math.max(1, current - 1);
                         })
                       }
@@ -515,7 +558,10 @@ export default function TestPageClient() {
                       value={customMinutes}
                       onChange={(e) => {
                         // allow typing digits; clamp 1–180
-                        let val = e.target.value.replace(/\D/g, "");
+                        let val = e.target.value.replace(
+                          /\D/g,
+                          ""
+                        );
                         if (val === "") {
                           setCustomMinutes("");
                           return;
@@ -533,7 +579,8 @@ export default function TestPageClient() {
                       className="px-2 py-1 bg-slate-700 rounded hover:bg-slate-600"
                       onClick={() =>
                         setCustomMinutes((m) => {
-                          const current = m === "" ? 1 : Number(m);
+                          const current =
+                            m === "" ? 1 : Number(m);
                           return Math.min(180, current + 1);
                         })
                       }
@@ -547,7 +594,9 @@ export default function TestPageClient() {
 
                 <p className="text-xs text-emerald-400">
                   {timeLeft > 0
-                    ? `Timer: ${formatTime(timeLeft)} remaining`
+                    ? `Timer: ${formatTime(
+                        timeLeft
+                      )} remaining`
                     : `Timer will start after quiz is generated.`}
                 </p>
               </>
@@ -577,7 +626,10 @@ export default function TestPageClient() {
 
             <div className="space-y-5">
               {questions.map((q, qIndex) => (
-                <div key={qIndex} className="border-b border-slate-800 pb-4">
+                <div
+                  key={qIndex}
+                  className="border-b border-slate-800 pb-4"
+                >
                   <p className="text-sm font-medium mb-2">
                     Q{qIndex + 1}. {q.question}
                   </p>
@@ -591,9 +643,14 @@ export default function TestPageClient() {
                         <input
                           type="radio"
                           name={`q-${qIndex}`}
-                          checked={answers[qIndex] === optIndex}
+                          checked={
+                            answers[qIndex] === optIndex
+                          }
                           onChange={() =>
-                            handleAnswerChange(qIndex, optIndex)
+                            handleAnswerChange(
+                              qIndex,
+                              optIndex
+                            )
                           }
                         />
                         <span>{opt}</span>
@@ -619,23 +676,31 @@ export default function TestPageClient() {
         {/* RESULT + AI EXPLANATIONS + DOWNLOAD PDF */}
         {result && (
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5">
-            <h2 className="text-xl font-semibold mb-3">Test Review</h2>
+            <h2 className="text-xl font-semibold mb-3">
+              Test Review
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 text-sm">
               <div>
-                <p className="text-slate-400 text-xs">Score</p>
+                <p className="text-slate-400 text-xs">
+                  Score
+                </p>
                 <p className="text-lg font-semibold">
                   {result.score} / {result.total}
                 </p>
               </div>
               <div>
-                <p className="text-slate-400 text-xs">Accuracy</p>
+                <p className="text-slate-400 text-xs">
+                  Accuracy
+                </p>
                 <p className="text-lg font-semibold">
                   {result.accuracy}%
                 </p>
               </div>
               <div>
-                <p className="text-slate-400 text-xs">XP Earned</p>
+                <p className="text-slate-400 text-xs">
+                  XP Earned
+                </p>
                 <p className="text-lg font-semibold">
                   {result.xpEarned}
                 </p>
@@ -653,12 +718,14 @@ export default function TestPageClient() {
               {/* PDF DOWNLOAD BUTTON */}
               <DownloadTestPdfButton
                 summary={{
-                  testLabel: result.testLabel || "StudySphere Test",
+                  testLabel:
+                    result.testLabel || "StudySphere Test",
                   score: result.score,
                   totalQuestions: result.total,
                   accuracy: result.accuracy,
                   difficulty: result.difficulty,
-                  timeUsedSeconds: result.timeUsedSeconds,
+                  timeUsedSeconds:
+                    result.timeUsedSeconds,
                   dateString: new Date().toLocaleString(),
                 }}
                 questions={result.perQuestionResults || []}
@@ -677,8 +744,10 @@ export default function TestPageClient() {
 
                   <div className="space-y-2">
                     {q.options.map((opt, optIndex) => {
-                      const isCorrect = optIndex === q.correctOptionIndex;
-                      const isUser = optIndex === q.userOptionIndex;
+                      const isCorrect =
+                        optIndex === q.correctOptionIndex;
+                      const isUser =
+                        optIndex === q.userOptionIndex;
 
                       let border = "border-slate-700";
                       let bg = "bg-slate-900";
@@ -716,19 +785,28 @@ export default function TestPageClient() {
                   </div>
 
                   <p className="mt-2 text-xs text-slate-300">
-                    <span className="font-semibold">Your answer:</span>{" "}
-                    {q.userOptionIndex != null && q.userOptionIndex >= 0
-                      ? q.options[q.userOptionIndex] || "Not answered"
+                    <span className="font-semibold">
+                      Your answer:
+                    </span>{" "}
+                    {q.userOptionIndex != null &&
+                    q.userOptionIndex >= 0
+                      ? q.options[q.userOptionIndex] ||
+                        "Not answered"
                       : "Not answered"}
                   </p>
                   <p className="text-xs text-emerald-300">
-                    <span className="font-semibold">Correct answer:</span>{" "}
+                    <span className="font-semibold">
+                      Correct answer:
+                    </span>{" "}
                     {q.options[q.correctOptionIndex] || "-"}
                   </p>
 
                   <p className="mt-2 text-xs text-slate-200">
-                    <span className="font-semibold">AI explanation:</span>{" "}
-                    {q.aiExplanation || "Explanation not available."}
+                    <span className="font-semibold">
+                      AI explanation:
+                    </span>{" "}
+                    {q.aiExplanation ||
+                      "Explanation not available."}
                   </p>
                 </div>
               ))}
@@ -750,5 +828,3 @@ export default function TestPageClient() {
     </div>
   );
 }
-
-
