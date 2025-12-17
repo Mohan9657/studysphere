@@ -169,3 +169,7 @@ Explanation shown
 Result exported to PDF
 
 
+👨‍💻 Author
+
+Mohan (Vulli Mohan)
+Full Stack Developer
